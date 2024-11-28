@@ -29,7 +29,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 from sklearn.neighbors import NearestNeighbors
 
-
 class LASProcessor:
     def __init__(self, filepath):
         self.filepath = filepath
@@ -88,7 +87,21 @@ class LASProcessor:
         plt.show()
 
     def visualize(self, point_clouds):
-        o3d.visualization.draw_geometries(point_clouds)
+        vis = o3d.visualization.VisualizerWithKeyCallback()
+        vis.create_window()
+
+        # Add point clouds to the visualizer
+        for pcd in point_clouds:
+            vis.add_geometry(pcd)
+        
+        # Define a callback for the ESC key to close the window
+        def close_vis(vis):
+            vis.destroy_window()
+            return False  # Stops the visualization loop
+
+        vis.register_key_callback(256, close_vis)  # 256 is the ASCII code for ESC
+        vis.run()
+        vis.destroy_window()
 
     def process(self):
         self.load_data()
